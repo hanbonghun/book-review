@@ -1,0 +1,23 @@
+spring:
+  config:
+    name: book-review
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+naver:
+  api:
+    client-id: ${NAVER_CLIENT_ID}
+    client-secret: ${NAVER_CLIENT_SECRET}
+    url: https://openapi.naver.com/v1/search/book.json
