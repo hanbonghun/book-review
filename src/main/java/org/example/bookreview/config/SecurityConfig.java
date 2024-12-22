@@ -1,14 +1,19 @@
 package org.example.bookreview.config;
 
+import org.example.bookreview.filter.JwtAuthenticationEntryPoint;
+import org.example.bookreview.filter.JwtAuthenticationFilter;
+import org.example.bookreview.filter.JwtExceptionFilter;
+import org.example.bookreview.filter.LogoutFilter;
 import org.example.bookreview.service.CustomOAuth2UserService;
 import org.example.bookreview.service.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 public class SecurityConfig {
@@ -17,14 +22,22 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http,
         CustomOAuth2UserService customOAuth2UserService,
         OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
-        CorsConfigurationSource corsConfigurationSource
+        JwtAuthenticationFilter jwtAuthenticationFilter,
+        LogoutFilter logoutFilter,
+        JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+        JwtExceptionFilter jwtExceptionFilter
     ) throws Exception {
         http
-            .cors(cors -> cors
-                .configurationSource(corsConfigurationSource)
+            .csrf(AbstractHttpConfigurer::disable)
+            .exceptionHandling(
+                exceptionHandlingCustomizer ->
+                    exceptionHandlingCustomizer.authenticationEntryPoint(
+                        jwtAuthenticationEntryPoint)
             )
+            .formLogin(AbstractHttpConfigurer::disable)
+            .logout(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/login/**").permitAll()
+                .requestMatchers("/login/**", "/", "/api/auth/refresh").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
@@ -32,7 +45,10 @@ public class SecurityConfig {
                     .userService(customOAuth2UserService)
                 )
                 .successHandler(oAuth2LoginSuccessHandler)
-            );
+            )
+            .addFilterBefore(logoutFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class);
 
         return http.build();
     }

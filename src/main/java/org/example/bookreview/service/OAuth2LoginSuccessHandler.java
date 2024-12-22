@@ -1,11 +1,22 @@
 package org.example.bookreview.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
+import java.util.Date;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.bookreview.config.JwtProperties;
 import org.example.bookreview.domain.CustomOAuth2User;
+import org.example.bookreview.repository.TokenRepository;
+import org.example.bookreview.service.JwtTokenProvider.TokenInfo;
+import org.example.bookreview.service.JwtTokenProvider.TokenType;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,19 +30,83 @@ import org.springframework.stereotype.Component;
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     private final SecurityContextRepository securityContextRepository;
+    private final JwtTokenProvider tokenProvider;
+    private final TokenRepository tokenRepository;
+    private final ObjectMapper objectMapper;
+    private final JwtProperties jwtProperties;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request,
-        HttpServletResponse response, Authentication authentication) throws IOException {
-
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(authentication);
-
-        securityContextRepository.saveContext(context, request, response);
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+        Authentication authentication) throws IOException {
+        saveAuthenticationContext(authentication, request, response);
 
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        log.debug("사용자 정보: {}", oAuth2User.getAttributes());
+        TokenInfo tokenInfo = generateTokens(oAuth2User);
 
-        response.sendRedirect("/");
+        saveRefreshToken(oAuth2User.getId().toString(), tokenInfo.getRefreshToken());
+        setRefreshTokenCookie(response, tokenInfo.getRefreshToken());
+        writeAccessTokenResponse(response, tokenInfo.getAccessToken());
+    }
+
+    private void saveAuthenticationContext(Authentication authentication,
+        HttpServletRequest request, HttpServletResponse response) {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        context.setAuthentication(authentication);
+        securityContextRepository.saveContext(context, request, response);
+    }
+
+    private TokenInfo generateTokens(CustomOAuth2User oAuth2User) {
+        Date now = new Date();
+
+        String accessToken = tokenProvider.generateToken(
+            oAuth2User.getId().toString(),
+            oAuth2User.getEmail(),
+            oAuth2User.getRoles(),
+            now,
+            TokenType.ACCESS
+        );
+
+        String refreshToken = tokenProvider.generateToken(
+            oAuth2User.getId().toString(),
+            oAuth2User.getEmail(),
+            oAuth2User.getRoles(),
+            now,
+            TokenType.REFRESH
+        );
+
+        return new TokenInfo(accessToken, refreshToken);
+    }
+
+    private void saveRefreshToken(String userId, String refreshToken) {
+        tokenRepository.saveRefreshToken(
+            userId,
+            refreshToken,
+            jwtProperties.getRefreshTokenExpiration()
+        );
+    }
+
+    private void setRefreshTokenCookie(HttpServletResponse response, String refreshToken) {
+        ResponseCookie refreshTokenCookie = ResponseCookie.from(
+                jwtProperties.getRefreshTokenCookieName(),
+                refreshToken)
+            .httpOnly(true)
+            .secure(true)
+            .sameSite("Strict")
+            .path("/")
+            .maxAge(Duration.ofMillis(jwtProperties.getRefreshTokenExpiration()))
+            .build();
+
+        response.setHeader(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
+    }
+
+    private void writeAccessTokenResponse(HttpServletResponse response, String accessToken)
+        throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        Map<String, String> responseBody = Map.of(
+            "accessToken", accessToken
+        );
+
+        objectMapper.writeValue(response.getWriter(), responseBody);
     }
 }

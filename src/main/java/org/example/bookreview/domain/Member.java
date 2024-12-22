@@ -1,11 +1,16 @@
 package org.example.bookreview.domain;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +18,9 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)public class Member {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,23 +28,29 @@ import lombok.NoArgsConstructor;
     private String name;
     private String email;
 
+    @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Set<Role> roles = new HashSet<>();
 
-    private String provider;        // google, naver 등 OAuth2 제공자
-    private String providerId;      // OAuth2 제공자의 사용자 식별자
-
+    private String provider;
+    private String providerId;
 
     @Builder
-    public Member(String email, String name, Role role, String provider, String providerId) {
+    public Member(String email, String name, Set<Role> roles, String provider, String providerId) {
         this.email = email;
         this.name = name;
-        this.role = role == null ? Role.USER : role;  // 기본 역할은 USER
+        this.roles = (roles == null || roles.isEmpty()) ?
+            Collections.singleton(Role.USER) :
+            roles;
         this.provider = provider;
         this.providerId = providerId;
     }
 
-    public enum Role {
-        USER, ADMIN
+    public void addRole(Role role) {
+        this.roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
     }
 }

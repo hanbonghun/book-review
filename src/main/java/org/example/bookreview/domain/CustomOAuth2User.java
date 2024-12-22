@@ -1,26 +1,33 @@
 package org.example.bookreview.domain;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Getter
 @AllArgsConstructor
 public class CustomOAuth2User implements OAuth2User {
 
-    private final Member member;
+    private final Long id;
+    private final String email;
     private final Map<String, Object> attributes;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public CustomOAuth2User(Member member, Map<String, Object> attributes) {
-        this.member = member;
+    @Builder
+    public CustomOAuth2User(Long id, String email, Set<Role> roles,
+        Map<String, Object> attributes) {
+        this.id = id;
+        this.email = email;
         this.attributes = attributes;
-        this.authorities = Collections.singleton(new SimpleGrantedAuthority(member.getRole().name()));
+        this.authorities = roles.stream()
+            .map(role -> (GrantedAuthority) role::getKey)
+            .collect(Collectors.toSet());
     }
 
     @Override
@@ -35,14 +42,13 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {
-        return member.getProviderId();
+        return id.toString();
     }
 
-    public String getEmail() {
-        return member.getEmail();
-    }
-
-    public String getUserId() {
-        return member.getId().toString();
+    public Set<Role> getRoles() {
+        return authorities.stream()
+            .map(authority -> Role.valueOf(
+                authority.getAuthority().replace("ROLE_", "")))
+            .collect(Collectors.toSet());
     }
 }
