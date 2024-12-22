@@ -2,6 +2,8 @@ package org.example.bookreview.service.review;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.bookreview.common.error.ErrorType;
+import org.example.bookreview.common.exception.BusinessException;
 import org.example.bookreview.domain.Member;
 import org.example.bookreview.domain.Review;
 import org.example.bookreview.dto.CreateReviewRequest;
@@ -19,7 +21,7 @@ public class ReviewService {
 
     public Long createReview(Long memberId, CreateReviewRequest request) {
         Member member = memberRepository.findById(memberId)
-            .orElseThrow(() -> new IllegalArgumentException("Member not found"));
+            .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
 
         Review review = Review.builder()
             .isbn(request.getIsbn())
