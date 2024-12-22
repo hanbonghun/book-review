@@ -39,7 +39,7 @@ public class NaverBookSearchService {
 
         try {
             ResponseEntity<String> rawResponse = restTemplate.exchange(req, String.class);
-            log.info("Raw Response: {}", rawResponse.getBody());
+            log.debug("Raw Response: {}", rawResponse.getBody());
 
             ResponseEntity<NaverBookSearchResponse> response = restTemplate.exchange(
                 req, NaverBookSearchResponse.class);
