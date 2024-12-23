@@ -3,6 +3,7 @@ package org.example.bookreview.book.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bookreview.book.domain.Book;
+import org.example.bookreview.book.repository.BookRepository;
 import org.example.bookreview.booksearch.dto.NaverBookSearchResponse;
 import org.example.bookreview.booksearch.service.NaverBookSearchService;
 import org.example.bookreview.common.error.ErrorType;
@@ -17,8 +18,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RetryableBookService {
 
+    private final BookRepository bookRepository;
     private final NaverBookSearchService naverBookSearchService;
-    private final TransactionalBookService transactionalBookService;
 
     @Retryable(
         retryFor = {BusinessException.class},
@@ -26,7 +27,7 @@ public class RetryableBookService {
         backoff = @Backoff(delay = 1000)
     )
     public Book getOrCreateBookWithRetry(String isbn) {
-        return transactionalBookService.findBookOptionally(isbn)
+        return bookRepository.findById(isbn)
             .orElseGet(() -> createBookFromNaverApi(isbn));
     }
 
@@ -38,7 +39,7 @@ public class RetryableBookService {
         }
 
         Book book = Book.fromNaverBook(response.getItems().get(0));
-        return transactionalBookService.saveBook(book);
+        return bookRepository.save(book);
     }
 
     @Recover
