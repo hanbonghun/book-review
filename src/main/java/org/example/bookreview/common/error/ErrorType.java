@@ -24,7 +24,11 @@ public enum ErrorType {
 
     // 일반 에러
     VALIDATION_ERROR("COMMON_001", "입력값이 올바르지 않습니다", HttpStatus.BAD_REQUEST),
-    INTERNAL_ERROR("COMMON_002", "내부 서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
+    INTERNAL_ERROR("COMMON_002", "내부 서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // 외부 API 에러
+    EXTERNAL_API_ERROR("EXTERNAL_001", "API를 호출하는 과정에서 에러가 발생하였습니다", HttpStatus.BAD_GATEWAY);
+
 
     private final String code;
     private final String message;
