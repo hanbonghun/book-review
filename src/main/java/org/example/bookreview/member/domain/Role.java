@@ -1,4 +1,4 @@
-package org.example.bookreview.domain;
+package org.example.bookreview.member.domain;
 
 import lombok.Getter;
 

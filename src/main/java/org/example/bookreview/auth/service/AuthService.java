@@ -1,9 +1,9 @@
-package org.example.bookreview.service;
+package org.example.bookreview.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.bookreview.common.error.ErrorType;
 import org.example.bookreview.common.exception.BusinessException;
-import org.example.bookreview.repository.TokenRepository;
+import org.example.bookreview.auth.repository.TokenRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -18,10 +18,10 @@ public class AuthService {
 
     public String refreshAccessToken(String refreshToken) {
         validateRefreshToken(refreshToken);
-        
+
         String userId = jwtTokenProvider.getUserId(refreshToken);
         validateStoredRefreshToken(refreshToken, userId);
-        
+
         return jwtTokenProvider.regenerateAccessToken(refreshToken, new Date());
     }
 

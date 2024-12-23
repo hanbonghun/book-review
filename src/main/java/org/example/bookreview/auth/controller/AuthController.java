@@ -1,8 +1,8 @@
-package org.example.bookreview.controller;
+package org.example.bookreview.auth.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.bookreview.auth.service.AuthService;
 import org.example.bookreview.common.response.ApiResponse;
-import org.example.bookreview.service.AuthService;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

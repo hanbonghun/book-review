@@ -1,13 +1,13 @@
-package org.example.bookreview.service.review;
+package org.example.bookreview.review.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.bookreview.common.error.ErrorType;
 import org.example.bookreview.common.exception.BusinessException;
-import org.example.bookreview.domain.Member;
+import org.example.bookreview.member.domain.Member;
 import org.example.bookreview.domain.Review;
-import org.example.bookreview.dto.CreateReviewRequest;
-import org.example.bookreview.repository.MemberRepository;
+import org.example.bookreview.review.dto.CreateReviewRequest;
+import org.example.bookreview.member.repository.MemberRepository;
 import org.example.bookreview.repository.ReviewRepository;
 import org.springframework.stereotype.Service;
 

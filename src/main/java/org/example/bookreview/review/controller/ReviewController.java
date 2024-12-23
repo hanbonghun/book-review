@@ -1,10 +1,10 @@
-package org.example.bookreview.controller;
+package org.example.bookreview.review.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.bookreview.domain.CustomOAuth2User;
-import org.example.bookreview.dto.CreateReviewRequest;
-import org.example.bookreview.service.review.ReviewService;
+import org.example.bookreview.oauth.CustomOAuth2User;
+import org.example.bookreview.review.dto.CreateReviewRequest;
+import org.example.bookreview.review.service.ReviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

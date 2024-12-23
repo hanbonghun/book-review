@@ -1,4 +1,4 @@
-package org.example.bookreview.repository;
+package org.example.bookreview.auth.repository;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;

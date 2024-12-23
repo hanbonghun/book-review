@@ -1,4 +1,4 @@
-package org.example.bookreview.service;
+package org.example.bookreview.oauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,11 +9,11 @@ import java.util.Date;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.bookreview.auth.service.JwtTokenProvider;
 import org.example.bookreview.config.JwtProperties;
-import org.example.bookreview.domain.CustomOAuth2User;
-import org.example.bookreview.repository.TokenRepository;
-import org.example.bookreview.service.JwtTokenProvider.TokenInfo;
-import org.example.bookreview.service.JwtTokenProvider.TokenType;
+import org.example.bookreview.auth.repository.TokenRepository;
+import org.example.bookreview.auth.service.JwtTokenProvider.TokenInfo;
+import org.example.bookreview.auth.service.JwtTokenProvider.TokenType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -34,6 +35,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private final TokenRepository tokenRepository;
     private final ObjectMapper objectMapper;
     private final JwtProperties jwtProperties;
+    private final String clientRedirectUri = "http://localhost:5174"; // 프론트엔드 도메인
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -45,8 +47,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         saveRefreshToken(oAuth2User.getId().toString(), tokenInfo.getRefreshToken());
         setRefreshTokenCookie(response, tokenInfo.getRefreshToken());
-        writeAccessTokenResponse(response, tokenInfo.getAccessToken());
-    }
+        // 프론트엔드로 리다이렉트하면서 액세스 토큰을 쿼리 파라미터로 전달
+        String redirectUrl = UriComponentsBuilder.fromUriString(clientRedirectUri)
+            .queryParam("accessToken", tokenInfo.getAccessToken())
+            .build().toUriString();
+
+        response.sendRedirect(redirectUrl);    }
 
     private void saveAuthenticationContext(Authentication authentication,
         HttpServletRequest request, HttpServletResponse response) {

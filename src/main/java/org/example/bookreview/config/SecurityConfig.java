@@ -1,11 +1,11 @@
 package org.example.bookreview.config;
 
-import org.example.bookreview.filter.JwtAuthenticationEntryPoint;
-import org.example.bookreview.filter.JwtAuthenticationFilter;
-import org.example.bookreview.filter.JwtExceptionFilter;
-import org.example.bookreview.filter.LogoutFilter;
-import org.example.bookreview.service.CustomOAuth2UserService;
-import org.example.bookreview.service.OAuth2LoginSuccessHandler;
+import org.example.bookreview.auth.filter.JwtAuthenticationEntryPoint;
+import org.example.bookreview.auth.filter.JwtAuthenticationFilter;
+import org.example.bookreview.auth.filter.JwtExceptionFilter;
+import org.example.bookreview.auth.filter.LogoutFilter;
+import org.example.bookreview.oauth.CustomOAuth2UserService;
+import org.example.bookreview.oauth.OAuth2LoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

@@ -1,10 +1,10 @@
-package org.example.bookreview.service;
+package org.example.bookreview.auth.service;
 
 import java.util.Collections;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.example.bookreview.domain.CustomOAuth2User;
-import org.example.bookreview.domain.Role;
+import org.example.bookreview.member.domain.Role;
+import org.example.bookreview.oauth.CustomOAuth2User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;

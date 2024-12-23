@@ -1,13 +1,12 @@
-package org.example.bookreview.service;
+package org.example.bookreview.oauth;
 
 import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.bookreview.domain.CustomOAuth2User;
-import org.example.bookreview.domain.Member;
-import org.example.bookreview.domain.Role;
-import org.example.bookreview.repository.MemberRepository;
+import org.example.bookreview.member.domain.Member;
+import org.example.bookreview.member.domain.Role;
+import org.example.bookreview.member.repository.MemberRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;

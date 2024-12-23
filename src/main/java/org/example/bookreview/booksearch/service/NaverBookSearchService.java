@@ -1,10 +1,10 @@
-package org.example.bookreview.service;
+package org.example.bookreview.booksearch.service;
 
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.bookreview.config.NaverApiConfig;
-import org.example.bookreview.dto.NaverBookSearchResponse;
+import org.example.bookreview.booksearch.dto.NaverBookSearchResponse;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
-package org.example.bookreview.controller;
+package org.example.bookreview.booksearch.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.bookreview.dto.NaverBookSearchResponse;
-import org.example.bookreview.service.NaverBookSearchService;
+import org.example.bookreview.booksearch.dto.NaverBookSearchResponse;
+import org.example.bookreview.booksearch.service.NaverBookSearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

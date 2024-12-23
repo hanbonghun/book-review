@@ -1,4 +1,4 @@
-package org.example.bookreview.filter;
+package org.example.bookreview.auth.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;

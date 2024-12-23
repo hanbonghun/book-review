@@ -1,6 +1,5 @@
-package org.example.bookreview.filter;
+package org.example.bookreview.auth.filter;
 
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,11 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.example.bookreview.common.exception.InvalidTokenException;
-import org.example.bookreview.repository.TokenRepository;
-import org.example.bookreview.service.AuthenticationService;
-import org.example.bookreview.service.JwtTokenProvider;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
+import org.example.bookreview.auth.repository.TokenRepository;
+import org.example.bookreview.auth.service.AuthenticationService;
+import org.example.bookreview.auth.service.JwtTokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

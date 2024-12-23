@@ -1,4 +1,4 @@
-package org.example.bookreview.dto;
+package org.example.bookreview.review.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

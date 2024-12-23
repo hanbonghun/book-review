@@ -1,4 +1,4 @@
-package org.example.bookreview.dto;
+package org.example.bookreview.booksearch.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

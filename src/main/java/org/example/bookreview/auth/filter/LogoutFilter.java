@@ -1,4 +1,4 @@
-package org.example.bookreview.filter;
+package org.example.bookreview.auth.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
@@ -6,8 +6,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.bookreview.repository.TokenRepository;
-import org.example.bookreview.service.JwtTokenProvider;
+import org.example.bookreview.auth.repository.TokenRepository;
+import org.example.bookreview.auth.service.JwtTokenProvider;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;

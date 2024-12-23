@@ -1,4 +1,4 @@
-package org.example.bookreview.service;
+package org.example.bookreview.auth.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.bookreview.common.exception.InvalidTokenException;
 import org.example.bookreview.common.exception.TokenExpiredException;
 import org.example.bookreview.config.JwtProperties;
-import org.example.bookreview.domain.Role;
+import org.example.bookreview.member.domain.Role;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

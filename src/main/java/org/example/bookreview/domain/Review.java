@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.bookreview.base.BaseTimeEntity;
+import org.example.bookreview.member.domain.Member;
 
 @Entity
 @Getter

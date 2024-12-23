@@ -1,4 +1,4 @@
-package org.example.bookreview.domain;
+package org.example.bookreview.base;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
