@@ -1,4 +1,4 @@
-package org.example.bookreview.domain;
+package org.example.bookreview.review.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.bookreview.base.BaseTimeEntity;
+import org.example.bookreview.book.domain.Book;
 import org.example.bookreview.member.domain.Member;
 
 @Entity
@@ -24,13 +25,11 @@ public class Review extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String isbn;
-    private String bookTitle;
-    private String bookAuthors;
-    private String publisher;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Book book;
 
     private int rating;
     private String content;
@@ -39,13 +38,10 @@ public class Review extends BaseTimeEntity {
     private ReadingStatus readingStatus;
 
     @Builder
-    public Review(String isbn, String bookTitle, String bookAuthors, String publisher,
-        Member member, int rating, String content, ReadingStatus readingStatus) {
-        this.isbn = isbn;
-        this.bookTitle = bookTitle;
-        this.bookAuthors = bookAuthors;
-        this.publisher = publisher;
+    public Review(Member member, Book book, int rating,
+        String content, ReadingStatus readingStatus) {
         this.member = member;
+        this.book = book;
         this.rating = rating;
         this.content = content;
         this.readingStatus = readingStatus;

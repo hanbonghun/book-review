@@ -19,6 +19,9 @@ public enum ErrorType {
     USER_NOT_FOUND("USER_001", "사용자를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
     DUPLICATE_EMAIL("USER_002", "이미 사용 중인 이메일입니다", HttpStatus.CONFLICT),
 
+    // Book 관련 에러
+    BOOK_NOT_FOUND("BOOK_001", "해당 도서를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+
     // 일반 에러
     VALIDATION_ERROR("COMMON_001", "입력값이 올바르지 않습니다", HttpStatus.BAD_REQUEST),
     INTERNAL_ERROR("COMMON_002", "내부 서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR);
