@@ -3,6 +3,8 @@ package org.example.bookreview.booksearch.service;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.bookreview.common.error.ErrorType;
+import org.example.bookreview.common.exception.BusinessException;
 import org.example.bookreview.config.NaverApiConfig;
 import org.example.bookreview.booksearch.dto.NaverBookSearchResponse;
 import org.springframework.http.RequestEntity;
@@ -46,7 +48,7 @@ public class NaverBookSearchService {
             return response.getBody();
         } catch (RestClientException e) {
             log.error("API 호출 실패: {}", e.getMessage(), e);
-            throw new RuntimeException("네이버 도서 검색 API 호출 실패", e);
+            throw new BusinessException(ErrorType.EXTERNAL_API_ERROR);
         }
     }
 }
