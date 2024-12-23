@@ -1,8 +1,9 @@
-package org.example.bookreview.repository;
+package org.example.bookreview.review.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import org.example.bookreview.review.domain.Review;
+import org.example.bookreview.review.dto.ReviewSearchCondition;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +28,20 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
         "LEFT JOIN FETCH r.book b " +
         "ORDER BY r.createdAt DESC")
     List<Review> findInitial(Pageable pageable);
-}
+
+    @Query("""
+        SELECT r FROM Review r
+        JOIN FETCH r.member
+        JOIN FETCH r.book
+        WHERE (:#{#condition.isbn} IS NULL OR r.book.isbn = :#{#condition.isbn})
+        AND (:#{#condition.memberId} IS NULL OR r.member.id = :#{#condition.memberId})
+        AND (:#{#condition.cursor} IS NULL OR r.createdAt < :#{#condition.cursor})
+        ORDER BY
+        CASE 
+            WHEN :#{#condition.sortBy} = 'rating-desc' THEN r.rating
+            ELSE NULL
+        END DESC,
+        r.createdAt DESC
+        """)
+    List<Review> findByCondition(@Param("condition") ReviewSearchCondition condition, Pageable pageable);
+  }

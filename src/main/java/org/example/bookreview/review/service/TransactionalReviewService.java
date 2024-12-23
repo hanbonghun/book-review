@@ -7,7 +7,7 @@ import org.example.bookreview.common.error.ErrorType;
 import org.example.bookreview.common.exception.BusinessException;
 import org.example.bookreview.member.domain.Member;
 import org.example.bookreview.member.repository.MemberRepository;
-import org.example.bookreview.repository.ReviewRepository;
+import org.example.bookreview.review.repository.ReviewRepository;
 import org.example.bookreview.review.domain.Review;
 import org.example.bookreview.review.dto.CreateReviewRequest;
 import org.springframework.stereotype.Service;

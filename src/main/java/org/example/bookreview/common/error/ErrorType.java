@@ -22,6 +22,14 @@ public enum ErrorType {
     // Book 관련 에러
     BOOK_NOT_FOUND("BOOK_001", "해당 도서를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
 
+    // 리뷰 관련 에러
+    REIVEW_NOT_FOUND("REVIEW_001", "해당 리뷰를 찾을 수 없습니다", HttpStatus.NOT_FOUND),
+    CANNOT_LIKE_OWN_REVIEW("REVIEW_002", "자신의 리뷰에는 좋아요을 누를 수 없습니다", HttpStatus.NOT_FOUND),
+
+    // 좋아요 관련 에러
+    LIKE_NOT_FOUND("LIKE_001", "좋아요가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
+    ALREADY_LIKE_EXIST("LIKE_002", "이미 좋아요를 표시한 리뷰입니다", HttpStatus.BAD_REQUEST),
+
     // 일반 에러
     VALIDATION_ERROR("COMMON_001", "입력값이 올바르지 않습니다", HttpStatus.BAD_REQUEST),
     INTERNAL_ERROR("COMMON_002", "내부 서버 오류가 발생했습니다", HttpStatus.INTERNAL_SERVER_ERROR),

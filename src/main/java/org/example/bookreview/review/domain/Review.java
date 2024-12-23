@@ -37,6 +37,8 @@ public class Review extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ReadingStatus readingStatus;
 
+    private int likeCount = 0;
+
     @Builder
     public Review(Member member, Book book, int rating,
         String content, ReadingStatus readingStatus) {
@@ -49,5 +51,13 @@ public class Review extends BaseTimeEntity {
 
     public enum ReadingStatus {
         READING, READ, WANT_TO_READ
+    }
+
+    public void increaseLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decreaseLikeCount() {
+        this.likeCount--;
     }
 }
