@@ -3,7 +3,7 @@ package org.example.bookreview.book.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.bookreview.book.dto.BookDetailResponse;
-import org.example.bookreview.book.service.TransactionalBookService;
+import org.example.bookreview.book.service.BookService;
 import org.example.bookreview.common.response.ApiResponse;
 import org.example.bookreview.oauth.CustomOAuth2User;
 import org.example.bookreview.review.dto.CreateReviewRequest;
@@ -24,13 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class BookController {
 
-    private final TransactionalBookService transactionalBookService;
+    private final BookService bookService;
     private final ReviewService reviewService;
 
     // 특정 책의 상세 정보 조회
     @GetMapping("/{isbn}")
     public ApiResponse<BookDetailResponse> getBookDetails(@PathVariable String isbn) {
-        BookDetailResponse bookDetailResponse = transactionalBookService.getBookDetail(isbn);
+        BookDetailResponse bookDetailResponse = bookService.getBookDetail(isbn);
         return ApiResponse.success(bookDetailResponse);
     }
 
