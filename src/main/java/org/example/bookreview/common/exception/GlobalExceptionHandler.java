@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.bookreview.common.error.ErrorMessage;
 import org.example.bookreview.common.error.ErrorType;
 import org.example.bookreview.common.response.ApiResponse;
+import org.example.bookreview.oauth.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -89,5 +90,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(ApiResponse.error(ErrorType.INTERNAL_ERROR));
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiResponse<?>> handleUnauthorizedException(UnauthorizedException e) {
+        log.error("UnauthorizedException: {}", e.getMessage(), e);
+        return ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(ApiResponse.error(ErrorType.UNAUTHORIZED, e.getMessage()));
     }
 }
