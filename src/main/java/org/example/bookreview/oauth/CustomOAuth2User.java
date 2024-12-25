@@ -7,18 +7,21 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.example.bookreview.member.domain.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class CustomOAuth2User implements OAuth2User {
 
-    private final Long id;
-    private final String email;
-    private final Map<String, Object> attributes;
-    private final Collection<? extends GrantedAuthority> authorities;
+    private Long id;
+    private String email;
+    private Map<String, Object> attributes;
+    private Collection<? extends GrantedAuthority> authorities;
 
     @Builder
     public CustomOAuth2User(Long id, String email, Set<Role> roles,

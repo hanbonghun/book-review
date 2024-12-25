@@ -5,15 +5,15 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
-import org.example.bookreview.common.exception.InvalidTokenException;
-import org.example.bookreview.auth.repository.TokenRepository;
 import org.example.bookreview.auth.service.AuthenticationService;
 import org.example.bookreview.auth.service.JwtTokenProvider;
+import org.example.bookreview.auth.service.TokenExtractor;
+import org.example.bookreview.member.domain.Role;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
@@ -21,41 +21,30 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AuthenticationService authenticationService;
-    private final TokenRepository blacklistRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenExtractor tokenExtractor;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-
         try {
-            String token = resolveToken(request);
-
+            String token = tokenExtractor.extractAccessToken(request);
             if (token != null) {
                 jwtTokenProvider.validateToken(token);
+                String id = jwtTokenProvider.getUserId(token);
+                String email = jwtTokenProvider.getEmail(token);
+                Set<Role> roles = jwtTokenProvider.getRoles(token);
 
-                if (blacklistRepository.isBlacklisted(token)) {
-                    throw new InvalidTokenException("사용할 수 없는 토큰입니다.");
-                }
-
-                Authentication authentication = authenticationService.getAuthentication(token);
+                Authentication authentication = authenticationService.getAuthentication(id, email, roles);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                SecurityContextHolder.getContext().setAuthentication(authenticationService.getGuestAuthentication());
             }
-
             filterChain.doFilter(request, response);
-
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
             throw e;
         }
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 
     @Override

@@ -7,8 +7,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -18,11 +16,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.example.bookreview.common.exception.InvalidTokenException;
-import org.example.bookreview.common.exception.TokenExpiredException;
 import org.example.bookreview.config.JwtProperties;
 import org.example.bookreview.member.domain.Role;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 @RequiredArgsConstructor
@@ -67,7 +63,7 @@ public class JwtTokenProvider {
         try {
             parseClaims(token);
         } catch (ExpiredJwtException e) {
-            throw new TokenExpiredException("만료된 토큰입니다.");
+            throw new InvalidTokenException("만료된 토큰입니다.");
         } catch (SecurityException | MalformedJwtException e) {
             throw new InvalidTokenException("잘못된 JWT 서명입니다.");
         } catch (UnsupportedJwtException e) {
@@ -84,6 +80,19 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+    public String getEmail(String token) {
+        Claims claims = parseClaims(token);
+        return claims.get("email", String.class);
+    }
+
+    public Set<Role> getRoles(String token) {
+        Claims claims = parseClaims(token);
+        List<String> roleStrings = claims.get("roles", List.class);
+        return roleStrings.stream()
+            .map(roleString -> Role.valueOf(roleString.replace("ROLE_", "")))
+            .collect(Collectors.toSet());
+    }
+
     public long getTokenExpirationTime(String token) {
         Claims claims = parseClaims(token);
         return claims.getExpiration().getTime();
@@ -93,25 +102,6 @@ public class JwtTokenProvider {
         long expirationTime = getTokenExpirationTime(token);
         long currentTime = System.currentTimeMillis();
         return expirationTime - currentTime;
-    }
-
-    public String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
-
-    public String extractRefreshTokenFromCookie(HttpServletRequest request) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if ("refresh_token".equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
     }
 
     private Claims parseClaims(String token) {
@@ -128,24 +118,10 @@ public class JwtTokenProvider {
             jwtProperties.getRefreshTokenExpiration();
     }
 
-    public String getEmail(String token) {
-        Claims claims = parseClaims(token);
-        return claims.get("email", String.class);
-    }
-
-    public Set<Role> getRoles(String token) {
-        Claims claims = parseClaims(token);
-        List<String> roleStrings = claims.get("roles", List.class);
-        return roleStrings.stream()
-            .map(roleString -> Role.valueOf(roleString.replace("ROLE_", "")))  // ROLE_ 접두사 제거
-            .collect(Collectors.toSet());
-    }
-
     @Getter
     @Builder
     @AllArgsConstructor
     public static class TokenInfo {
-
         private String accessToken;
         private String refreshToken;
     }
