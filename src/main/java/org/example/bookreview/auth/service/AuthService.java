@@ -18,17 +18,13 @@ public class AuthService {
 
     public String refreshAccessToken(String refreshToken) {
         validateRefreshToken(refreshToken);
-
         String userId = jwtTokenProvider.getUserId(refreshToken);
         validateStoredRefreshToken(refreshToken, userId);
-
         return jwtTokenProvider.regenerateAccessToken(refreshToken, new Date());
     }
 
     private void validateRefreshToken(String refreshToken) {
-        if (!StringUtils.hasText(refreshToken)) {
-            throw new BusinessException(ErrorType.REFRESH_TOKEN_MISSING);
-        }
+        jwtTokenProvider.validateToken(refreshToken);
 
         if (tokenRepository.isBlacklisted(refreshToken)) {
             throw new BusinessException(ErrorType.REFRESH_TOKEN_BLACKLISTED);

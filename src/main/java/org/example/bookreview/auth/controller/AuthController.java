@@ -17,7 +17,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ApiResponse<String> refreshAccessToken(
-        @CookieValue(name = "refresh_token", required = false) String refreshToken) {
+        @CookieValue(name = "refresh_token") String refreshToken) {
         String newAccessToken = authService.refreshAccessToken(refreshToken);
         return ApiResponse.success(newAccessToken);
     }
