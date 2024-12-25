@@ -7,19 +7,14 @@ import org.example.bookreview.member.domain.Role;
 import org.example.bookreview.oauth.CustomOAuth2User;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
 
-    private final JwtTokenProvider jwtTokenProvider;
-
-    public Authentication getAuthentication(String token) {
-        String id = jwtTokenProvider.getUserId(token);
-        String email = jwtTokenProvider.getEmail(token);
-        Set<Role> roles = jwtTokenProvider.getRoles(token);
-
+    public Authentication getAuthentication(String id, String email, Set<Role> roles) {
         CustomOAuth2User customOAuth2User = CustomOAuth2User.builder()
             .id(Long.valueOf(id))
             .email(email)
@@ -27,7 +22,18 @@ public class AuthenticationService {
             .attributes(Collections.emptyMap())
             .build();
 
-        return new UsernamePasswordAuthenticationToken(customOAuth2User, null,
-            customOAuth2User.getAuthorities());
+        return new UsernamePasswordAuthenticationToken(
+            customOAuth2User,
+            null,
+            customOAuth2User.getAuthorities()
+        );
+    }
+
+    public Authentication getGuestAuthentication() {
+        return new UsernamePasswordAuthenticationToken(
+            "GUEST",
+            null,
+            Collections.singleton(new SimpleGrantedAuthority("ROLE_GUEST"))
+        );
     }
 }

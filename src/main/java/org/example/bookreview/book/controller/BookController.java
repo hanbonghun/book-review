@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.example.bookreview.book.dto.BookDetailResponse;
 import org.example.bookreview.book.service.BookService;
 import org.example.bookreview.common.response.ApiResponse;
+import org.example.bookreview.auth.controller.CurrentUser;
 import org.example.bookreview.oauth.CustomOAuth2User;
 import org.example.bookreview.review.dto.CreateReviewRequest;
 import org.example.bookreview.review.dto.ReviewPaginationRequest;
 import org.example.bookreview.review.dto.ReviewPaginationResponse;
 import org.example.bookreview.review.service.ReviewService;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,15 +40,14 @@ public class BookController {
         @PathVariable String isbn,
         @RequestParam(required = false) String cursor,
         @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "latest") String sort, // 정렬 가능,
-        @AuthenticationPrincipal CustomOAuth2User principal
+        @RequestParam(defaultValue = "latest") String sort,
+        @CurrentUser(required = false) CustomOAuth2User principal
     ) {
-        Long currentUserId = (principal != null) ? principal.getId() : null; // 비로그인 허용
         ReviewPaginationResponse response = reviewService.getBookReviews(
             isbn,
             new ReviewPaginationRequest(cursor, size),
             sort,
-            currentUserId // 사용자 ID 전달
+            principal.getId()
         );
         return ApiResponse.success(response);
     }
@@ -56,7 +55,7 @@ public class BookController {
     // 특정 책에 리뷰 생성
     @PostMapping("/{isbn}/reviews")
     public ApiResponse<Long> addReviewToBook(
-        @AuthenticationPrincipal CustomOAuth2User principal,
+        @CurrentUser CustomOAuth2User principal,
         @PathVariable String isbn,
         @RequestBody @Valid CreateReviewRequest request
     ) {
