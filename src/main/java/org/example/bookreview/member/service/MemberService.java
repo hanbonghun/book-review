@@ -1,12 +1,9 @@
 package org.example.bookreview.member.service;
 
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.example.bookreview.common.error.ErrorType;
 import org.example.bookreview.common.exception.BusinessException;
 import org.example.bookreview.member.domain.Member;
-import org.example.bookreview.member.domain.Role;
 import org.example.bookreview.member.dto.MyInfoResponse;
 import org.example.bookreview.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -28,7 +25,5 @@ public class MemberService {
             member.getRoles(),
             member.getProvider()
         );
-
     }
-
 }
