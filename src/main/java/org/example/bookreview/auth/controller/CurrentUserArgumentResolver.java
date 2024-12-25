@@ -32,7 +32,6 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
             if (isCurrentUserRequired(currentUser)) {
                 throw new UnauthorizedException("인증이 필요한 서비스입니다.");
             }
-            return null;
         }
 
         return authentication.getPrincipal();

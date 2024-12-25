@@ -30,10 +30,17 @@ public class AuthenticationService {
     }
 
     public Authentication getGuestAuthentication() {
+        CustomOAuth2User customOAuth2User = CustomOAuth2User.builder()
+            .id(-1L)  // 게스트 사용자 아이디
+            .email("guest@invalid")
+            .roles(Collections.singleton(Role.GUEST))  // 게스트 역할
+            .attributes(Collections.emptyMap())
+            .build();
+
         return new UsernamePasswordAuthenticationToken(
-            "GUEST",
+            customOAuth2User,
             null,
-            Collections.singleton(new SimpleGrantedAuthority("ROLE_GUEST"))
+            customOAuth2User.getAuthorities()
         );
     }
 }
