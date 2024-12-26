@@ -2,6 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.epages.restdocs-api-spec' version '0.18.2'
+
 }
 
 group = 'org.example'
@@ -45,8 +47,29 @@ dependencies {
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
 
+    testImplementation('com.epages:restdocs-api-spec-mockmvc:0.19.4') //2.2
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc:3.0.3'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+
+
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+    outputs.dir snippetsDir
+    finalizedBy 'openapi3'
+}
+
+openapi3 {
+    server = 'http://localhost:8080'
+    title = 'Book Review API'
+    description = 'Book Review Service API Documentation'
+    version = '0.1.0'
+    format = 'yaml'
+    outputDirectory = 'build/resources/main/static/docs'
+    outputFileNamePrefix = 'swagger'
 }

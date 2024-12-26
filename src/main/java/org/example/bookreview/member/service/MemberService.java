@@ -15,6 +15,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public MyInfoResponse getMyInfo(Long userId) {
+        System.out.println("userId = " + userId);
         Member member = memberRepository.findById(userId)
             .orElseThrow(() -> new BusinessException(ErrorType.USER_NOT_FOUND));
 
