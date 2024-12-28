@@ -75,4 +75,7 @@ openapi3 {
     format = 'yaml'
     outputDirectory = layout.buildDirectory.dir("resources/main/static/docs").get().asFile
     outputFileNamePrefix = 'swagger'
+    doFirst {
+        outputDirectory.mkdirs()
+    }
 }
