@@ -73,6 +73,6 @@ openapi3 {
     description = 'Book Review Service API Documentation'
     version = '0.1.0'
     format = 'yaml'
-    outputDirectory = 'build/resources/main/static/docs'
+    outputDirectory = layout.buildDirectory.dir("resources/main/static/docs").get().asFile
     outputFileNamePrefix = 'swagger'
 }
