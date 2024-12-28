@@ -67,6 +67,7 @@ tasks.named('build') {
     dependsOn 'openapi3'
 }
 
+// openapi3 extension 설정
 openapi3 {
     server = 'http://localhost:8080'
     title = 'Book Review API'
@@ -75,7 +76,23 @@ openapi3 {
     format = 'yaml'
     outputDirectory = layout.buildDirectory.dir("resources/main/static/docs").get().asFile
     outputFileNamePrefix = 'swagger'
+}
+
+// 디렉토리 생성 태스크
+tasks.register('createDocsDirectory') {
     doFirst {
-        outputDirectory.mkdirs()
+        mkdir "build/resources/main/static/docs"
     }
+}
+
+// test 태스크가 디렉토리 생성에 의존하도록 설정
+tasks.named('test') {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+    dependsOn 'createDocsDirectory'
+}
+
+// build 태스크 의존성 설정
+tasks.named('build') {
+    dependsOn 'test'
 }

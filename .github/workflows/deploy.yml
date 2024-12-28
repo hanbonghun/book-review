@@ -15,22 +15,13 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      # Gradle 캐시 설정 추가
-      - name: Cache Gradle packages
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      # 단일 Gradle 명령어로 통합
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build --info --stacktrace
+          ./gradlew build --info --stacktrace
+
+      - name: Verify documentation
+        run: ls -l build/resources/main/static/docs/
 
       # OpenAPI 문서 생성 확인
       - name: Verify OpenAPI documentation
