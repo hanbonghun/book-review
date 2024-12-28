@@ -3,7 +3,6 @@ plugins {
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.epages.restdocs-api-spec' version '0.18.2'
-
 }
 
 group = 'org.example'
@@ -62,7 +61,10 @@ ext {
 tasks.named('test') {
     useJUnitPlatform()
     outputs.dir snippetsDir
-    finalizedBy 'openapi3'
+}
+
+tasks.named('build') {
+    dependsOn 'openapi3'
 }
 
 openapi3 {
