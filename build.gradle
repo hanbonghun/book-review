@@ -3,7 +3,6 @@ plugins {
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.epages.restdocs-api-spec' version '0.18.2'
-
 }
 
 group = 'org.example'
@@ -51,6 +50,8 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc:3.0.3'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
     testImplementation 'com.h2database:h2'
+    testImplementation 'com.github.codemonstur:embedded-redis:1.0.0'
+
 
 
 }
@@ -62,15 +63,38 @@ ext {
 tasks.named('test') {
     useJUnitPlatform()
     outputs.dir snippetsDir
-    finalizedBy 'openapi3'
 }
 
+tasks.named('build') {
+    dependsOn 'openapi3'
+}
+
+// openapi3 extension 설정
 openapi3 {
     server = 'http://localhost:8080'
     title = 'Book Review API'
     description = 'Book Review Service API Documentation'
     version = '0.1.0'
     format = 'yaml'
-    outputDirectory = 'build/resources/main/static/docs'
+    outputDirectory = layout.buildDirectory.dir("resources/main/static/docs").get().asFile
     outputFileNamePrefix = 'swagger'
+}
+
+// 디렉토리 생성 태스크
+tasks.register('createDocsDirectory') {
+    doFirst {
+        mkdir "build/resources/main/static/docs"
+    }
+}
+
+// test 태스크가 디렉토리 생성에 의존하도록 설정
+tasks.named('test') {
+    useJUnitPlatform()
+    outputs.dir snippetsDir
+    dependsOn 'createDocsDirectory'
+}
+
+// build 태스크 의존성 설정
+tasks.named('build') {
+    dependsOn 'test'
 }

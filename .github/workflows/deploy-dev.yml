@@ -1,0 +1,76 @@
+name: Deploy to AWS
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew build --info --stacktrace
+
+      - name: Verify documentation
+        run: ls -l build/resources/main/static/docs/
+
+      # OpenAPI 문서 생성 확인
+      - name: Verify OpenAPI documentation
+        run: |
+          mkdir -p build/resources/main/static/docs
+          cp build/api-spec/swagger.yaml build/resources/main/static/docs/ || true
+          ls -l build/resources/main/static/docs/
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-review-app .
+          docker push ${{ secrets.DOCKER_USERNAME }}/book-review-app
+
+      - name: Copy docker-compose file to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/ec2-user"
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          script: |
+            cd /home/ec2-user
+            docker-compose down
+            docker-compose pull
+            export DOCKER_USERNAME='${{ secrets.DOCKER_USERNAME }}'
+            export DB_URL='${{ secrets.DB_URL }}'
+            export DB_USERNAME='${{ secrets.DB_USERNAME }}'
+            export DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
+            export SPRING_DATA_REDIS_HOST=redis
+            export SPRING_DATA_REDIS_PORT=6379
+            export KAKAO_CLIENT_ID='${{ secrets.KAKAO_CLIENT_ID }}'
+            export KAKAO_CLIENT_SECRET='${{ secrets.KAKAO_CLIENT_SECRET }}'
+            export KAKAO_REDIRECT_URI='${{ secrets.KAKAO_REDIRECT_URI }}'
+            export NAVER_CLIENT_ID='${{ secrets.NAVER_CLIENT_ID }}'
+            export NAVER_CLIENT_SECRET='${{ secrets.NAVER_CLIENT_SECRET }}'
+            export CORS_ALLOWED_ORIGINS='${{ secrets.CORS_ALLOWED_ORIGINS }}'
+            export JWT_SECRET_KEY='${{ secrets.JWT_SECRET_KEY }}'
+            docker-compose up -d
