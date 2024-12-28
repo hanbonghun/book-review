@@ -21,7 +21,7 @@ jobs:
       - name: Run tests and generate OpenAPI docs
         run: |
           chmod +x ./gradlew
-          ./gradlew clean test openapi3
+          ./gradlew clean test openapi3 --info --stacktrace
 
       - name: Verify OpenAPI documentation
         run: ls -l build/resources/main/static/docs/
