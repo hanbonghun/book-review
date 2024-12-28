@@ -15,10 +15,19 @@ jobs:
           java-version: '17'
           distribution: 'corretto'
 
-      - name: Build with Gradle
+      - name: Ensure output directory exists
+        run: mkdir -p build/resources/main/static/docs
+
+      - name: Run tests and generate OpenAPI docs
         run: |
           chmod +x ./gradlew
-          ./gradlew build --info --stacktrace
+          ./gradlew clean test openapi3
+
+      - name: Verify OpenAPI documentation
+        run: ls -l build/resources/main/static/docs/
+
+      - name: Build with Gradle
+        run: ./gradlew build --info --stacktrace
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
